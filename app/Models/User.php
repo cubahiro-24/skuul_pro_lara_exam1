@@ -88,9 +88,15 @@ class User extends Authenticatable
 
     /**
      * Obtenir ou créer le wallet de l'utilisateur
+     * Seuls les patients peuvent avoir un wallet
      */
-    public function getOrCreateWallet(): Wallet
+    public function getOrCreateWallet(): ?Wallet
     {
+        // Vérifier si l'utilisateur est un patient
+        if (!$this->hasRole('Patient')) {
+            return null;
+        }
+
         return $this->wallet ?? $this->wallet()->create([
             'solde' => 0,
             'is_active' => true,

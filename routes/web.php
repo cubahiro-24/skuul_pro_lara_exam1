@@ -55,7 +55,11 @@ Route::middleware(['auth', 'role:Medecin'])->prefix('medecin')->name('medecin.')
     Route::get('/dashboard', function () {
         return view('medecin.dashboard');
     })->name('dashboard');
-    Route::resource('rendez-vous', MedecinRendezVousController::class);
+    
+    // Routes Rendez-vous avec paramètre explicite
+    Route::get('/rendez-vous', [MedecinRendezVousController::class, 'index'])->name('rendez-vous.index');
+    Route::get('/rendez-vous/{rendezVous}', [MedecinRendezVousController::class, 'show'])->name('rendez-vous.show');
+    Route::patch('/rendez-vous/{rendezVous}/status', [MedecinRendezVousController::class, 'updateStatus'])->name('rendez-vous.update-status');
 });
 
 // Routes Patient

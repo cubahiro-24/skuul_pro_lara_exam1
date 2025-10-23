@@ -61,9 +61,9 @@
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-sm text-gray-400 mb-1">Revenus du Mois</p>
-                    <h3 class="text-3xl font-bold text-white">{{ number_format(\App\Models\Paiement::where('statut', 'reussi')->whereMonth('created_at', now()->month)->sum('montant'), 0, ',', ' ') }} FBU</h3>
+                    <h3 class="text-3xl font-bold text-white">{{ number_format(\App\Models\Paiement::where('statut', 'reussi')->whereMonth('date_paiement', now()->month)->whereYear('date_paiement', now()->year)->sum('montant'), 0, ',', ' ') }} FBU</h3>
                     <p class="text-xs text-green-400 mt-2">
-                        <span class="inline-block mr-1">↑</span> +15% ce mois
+                        <span class="inline-block mr-1">↑</span> Paiements validés
                     </p>
                 </div>
                 <div class="w-16 h-16 rounded-full bg-gradient-to-br from-green-500/20 to-emerald-500/20 flex items-center justify-center group-hover:shadow-[0_0_30px_rgba(34,197,94,0.5)] transition-shadow">

@@ -131,6 +131,8 @@
             </div>
 
             <!-- Paiement via Wallet -->
+                        <!-- Option Paiement Wallet -->
+            @if($wallet)
             <div x-data="{ 
                 payerMaintenant: false, 
                 selectedTypeService: null,
@@ -199,6 +201,7 @@
                     </div>
                 </div>
             </div>
+            @endif
 
             <!-- Submit Buttons -->
             <div class="flex items-center justify-end space-x-4 pt-4">

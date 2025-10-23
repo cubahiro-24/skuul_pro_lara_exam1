@@ -52,13 +52,6 @@ class MenuSeeder extends Seeder
                 'ordre' => 5,
                 'visible_pour' => [$roles['Admin'], $roles['Caissier']],
             ],
-            [
-                'titre' => 'Rapports',
-                'lien' => '/admin/rapports',
-                'icone' => 'chart-line',
-                'ordre' => 6,
-                'visible_pour' => [$roles['Admin']],
-            ],
             
             // Menu Médecin
             [
@@ -66,13 +59,6 @@ class MenuSeeder extends Seeder
                 'lien' => '/medecin/rendez-vous',
                 'icone' => 'calendar-check',
                 'ordre' => 1,
-                'visible_pour' => [$roles['Medecin']],
-            ],
-            [
-                'titre' => 'Mes Patients',
-                'lien' => '/medecin/patients',
-                'icone' => 'user-group',
-                'ordre' => 2,
                 'visible_pour' => [$roles['Medecin']],
             ],
             

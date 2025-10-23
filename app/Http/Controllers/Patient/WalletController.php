@@ -16,7 +16,17 @@ class WalletController extends Controller
      */
     public function index()
     {
+        // Vérifier que l'utilisateur est un patient
+        if (!Auth::user()->hasRole('Patient')) {
+            abort(403, 'Seuls les patients peuvent accéder au portefeuille virtuel.');
+        }
+
         $wallet = Auth::user()->getOrCreateWallet();
+        
+        if (!$wallet) {
+            abort(403, 'Accès non autorisé au portefeuille virtuel.');
+        }
+
         $transactions = $wallet->transactions()
             ->with('rendezVous.typeService.service')
             ->orderBy('created_at', 'desc')
@@ -36,13 +46,23 @@ class WalletController extends Controller
 
         return view('patient.wallet.index', compact('wallet', 'transactions', 'stats'));
     }
-
+ 
     /**
      * Formulaire de rechargement
      */
     public function recharger()
     {
+        // Vérifier que l'utilisateur est un patient
+        if (!Auth::user()->hasRole('Patient')) {
+            abort(403, 'Seuls les patients peuvent recharger leur portefeuille.');
+        }
+
         $wallet = Auth::user()->getOrCreateWallet();
+        
+        if (!$wallet) {
+            abort(403, 'Accès non autorisé au portefeuille virtuel.');
+        }
+
         return view('patient.wallet.recharger', compact('wallet'));
     }
 
@@ -51,6 +71,11 @@ class WalletController extends Controller
      */
     public function storeRechargement(Request $request)
     {
+        // Vérifier que l'utilisateur est un patient
+        if (!Auth::user()->hasRole('Patient')) {
+            abort(403, 'Seuls les patients peuvent recharger leur portefeuille.');
+        }
+
         $validated = $request->validate([
             'montant' => 'required|numeric|min:1000|max:5000000', // Min 1000 FBU, Max 5M FBU
             'methode' => 'required|in:mobile_money,carte_bancaire,especes',
@@ -62,6 +87,10 @@ class WalletController extends Controller
             DB::beginTransaction();
 
             $wallet = Auth::user()->getOrCreateWallet();
+
+            if (!$wallet) {
+                throw new \Exception('Portefeuille non disponible.');
+            }
 
             // Simuler la validation du paiement (à remplacer par vraie API de paiement)
             $transaction = $wallet->credit(
