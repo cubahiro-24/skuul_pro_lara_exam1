@@ -31,19 +31,6 @@
                     id="service_id" 
                     name="service_id" 
                     required
-                    x-data="{ selectedService: '' }"
-                    x-model="selectedService"
-                    @change="
-                        fetch(`/api/services/${selectedService}/type-services`)
-                            .then(r => r.json())
-                            .then(data => {
-                                const select = document.getElementById('type_service_id');
-                                select.innerHTML = '<option value=\"\">-- Sélectionnez un type de service --</option>';
-                                data.forEach(ts => {
-                                    select.innerHTML += `<option value=\"${ts.id}\">${ts.nom} - ${ts.prix.toLocaleString()} FCFA (${ts.duree_minutes} min)</option>`;
-                                });
-                            })
-                    "
                     class="w-full px-4 py-3 rounded-xl bg-gray-800/50 border border-cyan-500/30 text-white focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/50 transition-all"
                 >
                     <option value="">-- Sélectionnez un service --</option>
@@ -143,6 +130,76 @@
                 @enderror
             </div>
 
+            <!-- Paiement via Wallet -->
+            <div x-data="{ 
+                payerMaintenant: false, 
+                selectedTypeService: null,
+                prixService: 0,
+                soldeWallet: {{ $wallet->solde }}
+            }">
+                <div class="border border-yellow-500/30 rounded-xl p-6 bg-gradient-to-br from-yellow-500/5 to-orange-500/5">
+                    <div class="flex items-start space-x-3 mb-4">
+                        <div class="flex-shrink-0 w-12 h-12 rounded-full bg-gradient-to-br from-yellow-500/20 to-orange-500/20 flex items-center justify-center">
+                            <svg class="w-6 h-6 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                            </svg>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="text-lg font-semibold text-white mb-1">Paiement via Portefeuille</h3>
+                            <p class="text-sm text-gray-400">Votre solde actuel : <span class="text-yellow-400 font-semibold">{{ $wallet->solde_formate }}</span></p>
+                        </div>
+                    </div>
+
+                    <label class="flex items-center space-x-3 cursor-pointer group">
+                        <input 
+                            type="checkbox" 
+                            name="payer_maintenant" 
+                            value="1"
+                            x-model="payerMaintenant"
+                            class="w-5 h-5 rounded border-cyan-500/30 bg-gray-800/50 text-cyan-500 focus:ring-2 focus:ring-cyan-500/50 transition-all"
+                        >
+                        <span class="text-white group-hover:text-cyan-400 transition-colors">
+                            Payer maintenant avec mon portefeuille
+                        </span>
+                    </label>
+
+                    <div x-show="payerMaintenant" x-cloak class="mt-4 p-4 bg-gray-800/50 rounded-lg border border-cyan-500/20">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-sm text-gray-400">Montant à payer :</span>
+                            <span class="text-lg font-semibold text-white" x-text="prixService > 0 ? prixService.toLocaleString() + ' FBU' : 'Sélectionnez un service'"></span>
+                        </div>
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-sm text-gray-400">Votre solde :</span>
+                            <span class="text-lg font-semibold" :class="soldeWallet >= prixService ? 'text-green-400' : 'text-red-400'" x-text="soldeWallet.toLocaleString() + ' FBU'"></span>
+                        </div>
+                        <div class="border-t border-cyan-500/20 pt-2 mt-2">
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm font-medium text-gray-300">Solde après paiement :</span>
+                                <span class="text-lg font-bold" :class="(soldeWallet - prixService) >= 0 ? 'text-cyan-400' : 'text-red-400'" x-text="(soldeWallet - prixService).toLocaleString() + ' FBU'"></span>
+                            </div>
+                        </div>
+
+                        <div x-show="prixService > 0 && soldeWallet < prixService" class="mt-3 p-3 bg-red-500/10 border border-red-500/30 rounded-lg">
+                            <p class="text-sm text-red-400 flex items-center space-x-2">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                </svg>
+                                <span>Solde insuffisant ! <a href="{{ route('patient.wallet.recharger') }}" class="underline hover:text-red-300">Recharger mon portefeuille</a></span>
+                            </p>
+                        </div>
+
+                        <div x-show="prixService > 0 && soldeWallet >= prixService" class="mt-3 p-3 bg-green-500/10 border border-green-500/30 rounded-lg">
+                            <p class="text-sm text-green-400 flex items-center space-x-2">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                <span>Solde suffisant pour effectuer le paiement</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Submit Buttons -->
             <div class="flex items-center justify-end space-x-4 pt-4">
                 <a 
@@ -184,22 +241,63 @@
 
 @push('scripts')
 <script>
-    // Si un service était sélectionné (old input), recharger les types de services
     document.addEventListener('DOMContentLoaded', function() {
-        const serviceId = "{{ old('service_id') }}";
-        const typeServiceId = "{{ old('type_service_id') }}";
+        const serviceSelect = document.getElementById('service_id');
+        const typeServiceSelect = document.getElementById('type_service_id');
+        const oldServiceId = "{{ old('service_id') }}";
+        const oldTypeServiceId = "{{ old('type_service_id') }}";
         
-        if (serviceId) {
+        // Fonction pour charger les types de services
+        function loadTypeServices(serviceId, selectedTypeServiceId = null) {
+            if (!serviceId) {
+                typeServiceSelect.innerHTML = '<option value="">-- Sélectionnez d\'abord un service --</option>';
+                return;
+            }
+            
             fetch(`/api/services/${serviceId}/type-services`)
                 .then(r => r.json())
                 .then(data => {
-                    const select = document.getElementById('type_service_id');
-                    select.innerHTML = '<option value="">-- Sélectionnez un type de service --</option>';
+                    typeServiceSelect.innerHTML = '<option value="">-- Sélectionnez un type de service --</option>';
                     data.forEach(ts => {
-                        const selected = ts.id == typeServiceId ? 'selected' : '';
-                        select.innerHTML += `<option value="${ts.id}" ${selected}>${ts.nom} - ${ts.prix.toLocaleString()} FCFA (${ts.duree_minutes} min)</option>`;
+                        const selected = ts.id == selectedTypeServiceId ? 'selected' : '';
+                        typeServiceSelect.innerHTML += `<option value="${ts.id}" data-prix="${ts.prix}" ${selected}>${ts.nom} - ${ts.prix.toLocaleString()} FBU (${ts.duree_minutes} min)</option>`;
                     });
+                    
+                    // Mettre à jour le prix si une option était sélectionnée
+                    if (selectedTypeServiceId) {
+                        updatePrix();
+                    }
+                })
+                .catch(error => {
+                    console.error('Erreur lors du chargement des types de services:', error);
+                    typeServiceSelect.innerHTML = '<option value="">Erreur de chargement</option>';
                 });
+        }
+        
+        // Fonction pour mettre à jour le prix affiché
+        function updatePrix() {
+            const selectedOption = typeServiceSelect.options[typeServiceSelect.selectedIndex];
+            if (selectedOption && selectedOption.dataset.prix) {
+                const prix = parseFloat(selectedOption.dataset.prix);
+                // Mettre à jour via Alpine.js
+                const alpineComponent = document.querySelector('[x-data]').__x.$data;
+                if (alpineComponent) {
+                    alpineComponent.prixService = prix;
+                }
+            }
+        }
+        
+        // Écouter les changements sur le select de service
+        serviceSelect.addEventListener('change', function() {
+            loadTypeServices(this.value);
+        });
+        
+        // Écouter les changements sur le select de type de service
+        typeServiceSelect.addEventListener('change', updatePrix);
+        
+        // Si un service était sélectionné (old input), recharger les types de services
+        if (oldServiceId) {
+            loadTypeServices(oldServiceId, oldTypeServiceId);
         }
     });
 </script>

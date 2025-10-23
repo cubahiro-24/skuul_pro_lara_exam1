@@ -61,7 +61,7 @@
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-sm text-gray-400 mb-1">Revenus du Mois</p>
-                    <h3 class="text-3xl font-bold text-white">{{ number_format(\App\Models\Paiement::where('statut', 'reussi')->whereMonth('created_at', now()->month)->sum('montant'), 0, ',', ' ') }} FCFA</h3>
+                    <h3 class="text-3xl font-bold text-white">{{ number_format(\App\Models\Paiement::where('statut', 'reussi')->whereMonth('created_at', now()->month)->sum('montant'), 0, ',', ' ') }} FBU</h3>
                     <p class="text-xs text-green-400 mt-2">
                         <span class="inline-block mr-1">↑</span> +15% ce mois
                     </p>

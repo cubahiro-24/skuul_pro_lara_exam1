@@ -155,7 +155,7 @@
                         @foreach($service->typeServices->take(3) as $type)
                         <div class="flex items-center justify-between text-sm">
                             <span class="text-gray-300">{{ $type->nom }}</span>
-                            <span class="text-cyan-400 font-semibold">{{ number_format($type->prix, 0, ',', ' ') }} FCFA</span>
+                            <span class="text-cyan-400 font-semibold">{{ number_format($type->prix, 0, ',', ' ') }} FBU</span>
                         </div>
                         @endforeach
                     </div>

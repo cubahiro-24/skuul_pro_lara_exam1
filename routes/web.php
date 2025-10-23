@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\RendezVousController as AdminRendezVousController
 use App\Http\Controllers\Admin\PaiementController as AdminPaiementController;
 use App\Http\Controllers\Patient\RendezVousController as PatientRendezVousController;
 use App\Http\Controllers\Patient\PaiementController as PatientPaiementController;
+use App\Http\Controllers\Patient\WalletController as PatientWalletController;
 use App\Http\Controllers\Medecin\RendezVousController as MedecinRendezVousController;
 use Illuminate\Support\Facades\Route;
 
@@ -61,10 +62,23 @@ Route::middleware(['auth', 'role:Medecin'])->prefix('medecin')->name('medecin.')
 Route::middleware(['auth', 'role:Patient'])->prefix('patient')->name('patient.')->group(function () {
     Route::get('/dashboard', function () {
         return view('patient.dashboard');
-    })->name('patient.dashboard');
-    Route::resource('rendez-vous', PatientRendezVousController::class);
+    })->name('dashboard');
+    
+    // Routes Rendez-vous avec paramètre explicite
+    Route::get('/rendez-vous', [PatientRendezVousController::class, 'index'])->name('rendez-vous.index');
+    Route::get('/rendez-vous/create', [PatientRendezVousController::class, 'create'])->name('rendez-vous.create');
+    Route::post('/rendez-vous', [PatientRendezVousController::class, 'store'])->name('rendez-vous.store');
+    Route::get('/rendez-vous/{rendezVous}', [PatientRendezVousController::class, 'show'])->name('rendez-vous.show');
+    Route::delete('/rendez-vous/{rendezVous}', [PatientRendezVousController::class, 'destroy'])->name('rendez-vous.destroy');
+    
     Route::get('/paiements', [PatientPaiementController::class, 'index'])->name('paiements.index');
     Route::get('/factures', [PatientPaiementController::class, 'factures'])->name('factures.index');
+    
+    // Routes Wallet
+    Route::get('/wallet', [PatientWalletController::class, 'index'])->name('wallet.index');
+    Route::get('/wallet/recharger', [PatientWalletController::class, 'recharger'])->name('wallet.recharger');
+    Route::post('/wallet/recharger', [PatientWalletController::class, 'storeRechargement'])->name('wallet.store-rechargement');
+    Route::get('/wallet/transactions', [PatientWalletController::class, 'transactions'])->name('wallet.transactions');
 });
 
 // API Routes for AJAX calls

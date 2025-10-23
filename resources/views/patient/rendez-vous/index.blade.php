@@ -61,6 +61,7 @@
                         <th class="text-left py-3 px-4 text-sm font-medium text-gray-400">Date & Heure</th>
                         <th class="text-left py-3 px-4 text-sm font-medium text-gray-400">Service</th>
                         <th class="text-left py-3 px-4 text-sm font-medium text-gray-400">Médecin</th>
+                        <th class="text-left py-3 px-4 text-sm font-medium text-gray-400">Paiement</th>
                         <th class="text-left py-3 px-4 text-sm font-medium text-gray-400">Statut</th>
                         <th class="text-left py-3 px-4 text-sm font-medium text-gray-400">Actions</th>
                     </tr>
@@ -75,6 +76,7 @@
                         <td class="py-3 px-4">
                             <div class="text-white">{{ $rdv->typeService->nom }}</div>
                             <div class="text-sm text-gray-400">{{ $rdv->typeService->service->nom }}</div>
+                            <div class="text-sm text-cyan-400 font-semibold">{{ number_format($rdv->typeService->prix, 0, ',', ' ') }} FBU</div>
                         </td>
                         <td class="py-3 px-4">
                             <div class="flex items-center space-x-3">
@@ -86,6 +88,34 @@
                                     <p class="text-xs text-gray-400">{{ $rdv->medecin->telephone ?? 'N/A' }}</p>
                                 </div>
                             </div>
+                        </td>
+                        <td class="py-3 px-4">
+                            @if($rdv->paiements->isNotEmpty())
+                                @php
+                                    $paiement = $rdv->paiements->first();
+                                    $paiementColors = [
+                                        'reussi' => 'bg-green-500/20 text-green-400 border-green-500/50',
+                                        'en_attente' => 'bg-yellow-500/20 text-yellow-400 border-yellow-500/50',
+                                        'echoue' => 'bg-red-500/20 text-red-400 border-red-500/50',
+                                    ];
+                                @endphp
+                                <span class="px-2 py-1 rounded-full text-xs font-medium border {{ $paiementColors[$paiement->statut] ?? '' }}">
+                                    {{ ucfirst($paiement->statut) }}
+                                </span>
+                                <div class="text-xs text-gray-400 mt-1">{{ number_format($paiement->montant, 0, ',', ' ') }} FBU</div>
+                                @if($paiement->mode === 'wallet')
+                                <div class="text-xs text-yellow-400 flex items-center space-x-1 mt-1">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                                    </svg>
+                                    <span>Wallet</span>
+                                </div>
+                                @endif
+                            @else
+                                <span class="px-2 py-1 rounded-full text-xs font-medium border bg-gray-500/20 text-gray-400 border-gray-500/50">
+                                    Non payé
+                                </span>
+                            @endif
                         </td>
                         <td class="py-3 px-4">
                             @php
@@ -137,7 +167,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="5" class="py-12 text-center">
+                        <td colspan="6" class="py-12 text-center">
                             <div class="flex flex-col items-center justify-center space-y-4">
                                 <svg class="w-16 h-16 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />

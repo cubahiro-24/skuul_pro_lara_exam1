@@ -15,7 +15,21 @@
     </div>
 
     <!-- Quick Actions -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <a href="{{ route('patient.wallet.index') }}" class="group">
+            <x-card class="hover:scale-105 transition-transform cursor-pointer">
+                <div class="text-center py-6">
+                    <div class="w-20 h-20 rounded-full bg-gradient-to-br from-yellow-500/20 to-orange-500/20 flex items-center justify-center mx-auto mb-4 group-hover:shadow-[0_0_30px_rgba(234,179,8,0.5)] transition-shadow">
+                        <svg class="w-10 h-10 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-white">Mon Portefeuille</h3>
+                    <p class="text-gray-400 text-sm mt-2">Gérer mes FBU</p>
+                </div>
+            </x-card>
+        </a>
+
         <a href="{{ route('patient.rendez-vous.create') }}" class="group">
             <x-card class="hover:scale-105 transition-transform cursor-pointer">
                 <div class="text-center py-6">

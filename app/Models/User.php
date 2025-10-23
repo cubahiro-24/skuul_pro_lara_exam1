@@ -6,6 +6,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -75,6 +76,26 @@ class User extends Authenticatable
     public function rendezVousMedecin(): HasMany
     {
         return $this->hasMany(RendezVous::class, 'medecin_id');
+    }
+
+    /**
+     * Portefeuille virtuel de l'utilisateur
+     */
+    public function wallet(): HasOne
+    {
+        return $this->hasOne(Wallet::class);
+    }
+
+    /**
+     * Obtenir ou créer le wallet de l'utilisateur
+     */
+    public function getOrCreateWallet(): Wallet
+    {
+        return $this->wallet ?? $this->wallet()->create([
+            'solde' => 0,
+            'is_active' => true,
+            'devise' => 'FBU',
+        ]);
     }
 
     /**

@@ -92,17 +92,24 @@ class MenuSeeder extends Seeder
                 'visible_pour' => [$roles['Patient']],
             ],
             [
-                'titre' => 'Mes Paiements',
-                'lien' => '/patient/paiements',
+                'titre' => 'Mon Portefeuille',
+                'lien' => '/patient/wallet',
                 'icone' => 'wallet',
                 'ordre' => 3,
+                'visible_pour' => [$roles['Patient']],
+            ],
+            [
+                'titre' => 'Mes Paiements',
+                'lien' => '/patient/paiements',
+                'icone' => 'credit-card',
+                'ordre' => 4,
                 'visible_pour' => [$roles['Patient']],
             ],
             [
                 'titre' => 'Mes Factures',
                 'lien' => '/patient/factures',
                 'icone' => 'file-invoice',
-                'ordre' => 4,
+                'ordre' => 5,
                 'visible_pour' => [$roles['Patient']],
             ],
         ];
